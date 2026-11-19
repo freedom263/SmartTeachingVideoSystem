@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频上传 - 教学视频智能分析系统</title>
+    <link rel="stylesheet" href="/static/common.css">
+    <style>
+        .upload-area {
+            border: 3px dashed #cbd5e0;
+            border-radius: 16px;
+            padding: 80px 40px;
+            text-align: center;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f1f5f9;
+        }
+
+        .upload-area.dragging {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .upload-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+
+        .upload-text h3 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .upload-text p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .file-info {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .file-info.active {
+            display: block;
+        }
+
+        .file-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .file-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .file-size {
+            color: #718096;
+        }
+
+        .video-preview-container {
+            margin-top: 20px;
+        }
+
+        .video-preview-container video {
+            width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+        }
+
+        .analysis-options {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-group {
+            margin-bottom: 20px;
+        }
+
+        .option-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .option-group label:hover {
+            background: #f8fafc;
+        }
+
+        .option-group input[type="checkbox"],
+        .option-group input[type="radio"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .progress-container {
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar-container {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-status {
+            text-align: center;
+            color: #718096;
+            margin-top: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-logo">
+                <span>🎓</span>
+                <span>教学视频智能分析系统</span>
+            </a>
+            <ul class="navbar-menu">
+                <li><a href="/index.html">首页</a></li>
+                <li><a href="/upload.html">视频上传</a></li>
+                <li><a href="/tasks.html">我的任务</a></li>
+                <li><a href="/profile.html">个人中心</a></li>
+                <li id="adminLink" style="display:none"><a href="/admin.html">管理后台</a></li>
+            </ul>
+            <div class="navbar-user">
+                <div class="user-info">
+                    <div class="user-avatar" id="navUserAvatar">A</div>
+                    <span id="navUsername">用户</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">上传教学视频</h2>
+            </div>
+
+            <!-- 上传区域 -->
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📹</div>
+                <div class="upload-text">
+                    <h3>点击或拖拽上传视频</h3>
+                    <p>支持格式：MP4, AVI, MOV, MKV（最大2GB）</p>
+                </div>
+                <input type="file" id="videoInput" accept="video/*" style="display: none;">
+            </div>
+
+            <!-- 文件信息 -->
+            <div class="file-info" id="fileInfo">
+                <div class="file-detail">
+                    <span class="file-name" id="fileName">-</span>
+                    <span class="file-size" id="fileSize">-</span>
+                </div>
+                <div class="video-preview-container">
+                    <video id="videoPreview" controls></video>
+                </div>
+            </div>
+
+            <!-- 分析选项 -->
+            <div class="analysis-options" id="analysisOptions" style="display: none;">
+                <h3 style="margin-bottom: 15px;">分析选项</h3>
+                <div class="option-group">
+                    <label>
+                        <input type="checkbox" id="extractFrames" checked>
+                        <span>提取关键帧（推荐）</span>
+                    </label>
+                </div>
+                <div class="option-group">
+                    <label>
+                        <input type="checkbox" id="generateSubtitles" checked>
+                        <span>生成字幕（语音识别）</span>
+                    </label>
+                </div>
+                <div class="option-group">
+                    <label>
+                        <input type="checkbox" id="aiAnalysis" checked>
+                        <span>AI智能分析（知识图谱）</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 进度条 -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+                <div class="progress-status" id="progressStatus">准备中...</div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="button-group">
+                <button class="btn btn-primary" id="startBtn" style="display: none;" onclick="startAnalysis()">
+                    开始分析
+                </button>
+                <button class="btn btn-secondary" onclick="window.location.href='/tasks.html'">
+                    查看任务列表
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/common.js"></script>
+    <script>
+        checkAuth();
+
+        window.addEventListener('load', initNavbar);
+
+        const uploadArea = document.getElementById('uploadArea');
+        const videoInput = document.getElementById('videoInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const videoPreview = document.getElementById('videoPreview');
+        const analysisOptions = document.getElementById('analysisOptions');
+        const progressContainer = document.getElementById('progressContainer');
+        const startBtn = document.getElementById('startBtn');
+
+        let selectedFile = null;
+        let currentTaskId = null;
+
+        // 点击上传
+        uploadArea.addEventListener('click', () => videoInput.click());
+
+        // 文件选择
+        videoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // 拖拽上传
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragging');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragging');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragging');
+            if (e.dataTransfer.files.length > 0 && e.dataTransfer.files[0].type.startsWith('video/')) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        // 处理文件
+        function handleFile(file) {
+            selectedFile = file;
+
+            // 显示文件信息
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+
+            // 预览视频
+            const url = URL.createObjectURL(file);
+            videoPreview.src = url;
+
+            // 显示相关元素
+            fileInfo.classList.add('active');
+            analysisOptions.style.display = 'block';
+            startBtn.style.display = 'inline-block';
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+            return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+        }
+
+        // 开始分析
+        async function startAnalysis() {
+            if (!selectedFile) {
+                showToast('请先选择视频文件', 'error');
+                return;
+            }
+
+            // 禁用按钮
+            startBtn.disabled = true;
+            startBtn.textContent = '上传中...';
+            progressContainer.classList.add('active');
+
+            try {
+                // 上传视频
+                const formData = new FormData();
+                formData.append('video', selectedFile);
+
+                const uploadResponse = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    },
+                    body: formData
+                });
+
+                const uploadResult = await uploadResponse.json();
+
+                if (!uploadResult.success) {
+                    throw new Error(uploadResult.error || '上传失败');
+                }
+
+                currentTaskId = uploadResult.task_id;
+                updateProgress(10, '视频上传成功，开始处理...');
+
+                // 开始处理
+                const processResponse = await apiRequest(`/api/process/${currentTaskId}`, {
+                    method: 'POST'
+                });
+
+                const processResult = await processResponse.json();
+
+                if (!processResult.success) {
+                    throw new Error(processResult.error || '处理失败');
+                }
+
+                // 轮询进度
+                await pollProgress();
+
+            } catch (error) {
+                console.error('分析失败:', error);
+                showToast('分析失败: ' + error.message, 'error');
+                startBtn.disabled = false;
+                startBtn.textContent = '开始分析';
+                progressContainer.classList.remove('active');
+            }
+        }
+
+        // 更新进度
+        function updateProgress(percent, status) {
+            document.getElementById('progressBarFill').style.width = percent + '%';
+            document.getElementById('progressStatus').textContent = status + ' (' + percent + '%)';
+        }
+
+        // 轮询进度
+        async function pollProgress() {
+            const checkInterval = setInterval(async () => {
+                try {
+                    const response = await apiRequest(`/api/status/${currentTaskId}`);
+                    const data = await response.json();
+
+                    if (data.status === 'done') {
+                        clearInterval(checkInterval);
+                        updateProgress(100, '分析完成！');
+                        showToast('视频分析完成！', 'success');
+                        setTimeout(() => {
+                            window.location.href = `/result/${currentTaskId}`;
+                        }, 1500);
+                    } else if (data.status === 'failed') {
+                        clearInterval(checkInterval);
+                        showToast('分析失败：' + (data.error || '未知错误'), 'error');
+                        startBtn.disabled = false;
+                        startBtn.textContent = '重新分析';
+                    } else {
+                        // 根据状态更新进度
+                        let percent = 10;
+                        let statusText = '处理中...';
+
+                        switch (data.status) {
+                            case 'extracting_frames':
+                                percent = 30;
+                                statusText = '正在提取关键帧...';
+                                break;
+                            case 'extracting_audio':
+                                percent = 50;
+                                statusText = '正在提取音频...';
+                                break;
+                            case 'generating_subtitles':
+                                percent = 70;
+                                statusText = '正在生成字幕...';
+                                break;
+                            case 'ai_analysis':
+                                percent = 90;
+                                statusText = 'AI分析中...';
+                                break;
+                        }
+
+                        updateProgress(percent, statusText);
+                    }
+                } catch (error) {
+                    console.error('获取进度失败:', error);
+                }
+            }, 2000); // 每2秒检查一次
+        }
+    </script>
+</body>
+
+</html>

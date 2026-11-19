@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的任务 - 教学视频智能分析系统</title>
+    <link rel="stylesheet" href="/static/common.css">
+    <style>
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            border: none;
+            background: #e2e8f0;
+            color: #2c3e50;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tasks-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .task-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .task-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        /* Active button states */
+        .btn-active-favorite {
+            background-color: #ffc107 !important;
+            color: #333 !important;
+            border-color: #ffc107 !important;
+        }
+
+        .btn-active-share {
+            background-color: #17a2b8 !important;
+            color: white !important;
+            border-color: #17a2b8 !important;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 20px;
+            color: #718096;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .task-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-done {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-processing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .task-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .task-stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .task-actions .btn {
+            flex: 1;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #fee;
+            color: #dc2626;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-logo">
+                <span>🎓</span>
+                <span>教学视频智能分析系统</span>
+            </a>
+            <ul class="navbar-menu">
+                <li><a href="/index.html">首页</a></li>
+                <li><a href="/upload.html">视频上传</a></li>
+                <li><a href="/tasks.html">我的任务</a></li>
+                <li><a href="/profile.html">个人中心</a></li>
+                <li id="adminLink" style="display:none"><a href="/admin.html">管理后台</a></li>
+            </ul>
+            <div class="navbar-user">
+                <div class="user-info">
+                    <div class="user-avatar" id="navUserAvatar">A</div>
+                    <span id="navUsername">用户</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <div class="container">
+        <div class="tasks-header">
+            <h2 style="font-size: 2rem; color: #2c3e50;">我的任务</h2>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all" onclick="filterTasks('all')">全部</button>
+                <button class="filter-tab" data-filter="done" onclick="filterTasks('done')">已完成</button>
+                <button class="filter-tab" data-filter="processing" onclick="filterTasks('processing')">处理中</button>
+                <button class="filter-tab" data-filter="favorites" onclick="filterTasks('favorites')"
+                    style="color: #f59e0b;">⭐ 只看收藏</button>
+                <button class="filter-tab" data-filter="failed" onclick="filterTasks('failed')">失败</button>
+            </div>
+        </div>
+
+        <div class="tasks-grid" id="tasksGrid">
+            <!-- 任务卡片将在这里动态生成 -->
+        </div>
+
+        <!-- 空状态 -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">📭</div>
+            <div class="empty-state-text">暂无任务</div>
+            <p style="margin-top: 10px;">
+                <a href="/upload.html" style="color: #667eea;">立即上传视频</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- 总结编辑弹窗 -->
+    <div id="summaryModal" class="modal"
+        style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div class="modal-content"
+            style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 800px; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center;">
+                    <h2 style="margin: 0; margin-right: 15px;">编辑教学总结</h2>
+                    <button id="toggleReflectionBtn" class="btn btn-sm btn-outline-primary" onclick="toggleReflection()"
+                        style="display: none;">✍️ 撰写教学反思</button>
+                </div>
+                <span class="close" onclick="closeSummaryModal()"
+                    style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label for="classSummary" style="font-weight: bold;">课堂小结 (AI生成/用户编辑)</label>
+                    <button class="btn btn-sm btn-info" onclick="copyAIContent()"
+                        style="padding: 2px 8px; font-size: 12px;">📋 恢复AI原始内容</button>
+                </div>
+                <textarea id="classSummary"
+                    style="width: 100%; height: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; margin-bottom: 5px;"></textarea>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="font-size: 12px; color: #666;">* 默认显示AI分析内容，您可以自由修改。此内容将显示在报告的“课堂小结”部分。</div>
+                    <button class="btn btn-sm btn-secondary" onclick="copySummaryToReflection()"
+                        style="padding: 2px 8px; font-size: 12px;" title="将上方内容复制到教学反思作为草稿">⬇️ 引用为反思草稿</button>
+                </div>
+            </div>
+
+            <div id="reflectionSection"
+                style="margin-bottom: 20px; display: none; background-color: #f9f9f9; padding: 15px; border-radius: 5px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label for="userReflection" style="font-weight: bold; margin: 0;">教学反思 (用户个人总结)</label>
+                    <button class="btn btn-sm btn-outline-danger" onclick="hideReflection()" title="隐藏并清空反思（不保存）">🗑️
+                        移除反思</button>
+                </div>
+                <textarea id="userReflection"
+                    style="width: 100%; height: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;"
+                    placeholder="在此处输入您的教学反思、心得体会或改进计划..."></textarea>
+                <div style="font-size: 12px; color: #666; margin-top: 4px;">* 此内容将显示在报告的“教学反思”部分。</div>
+            </div>
+
+            <div style="text-align: right;">
+                <button class="btn btn-secondary" onclick="closeSummaryModal()" style="margin-right: 10px;">取消</button>
+                <button class="btn btn-primary" onclick="saveSummary()">💾 保存更改</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/common.js"></script>
+    <script>
+        checkAuth();
+        window.addEventListener('load', initNavbar);
+
+        let allTasks = [];
+        let currentFilter = 'all';
+
+        // 加载任务列表
+        async function loadTasks() {
+            try {
+                const response = await apiRequest('/api/tasks/recent');
+                if (response.ok) {
+                    allTasks = await response.json();
+                    renderTasks();
+                }
+            } catch (error) {
+                console.error('加载任务失败:', error);
+                showToast('加载任务失败', 'error');
+            }
+        }
+
+        // 渲染任务
+        function renderTasks() {
+            const tasksGrid = document.getElementById('tasksGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            let filteredTasks = allTasks;
+            if (currentFilter !== 'all') {
+                if (currentFilter === 'processing') {
+                    // 处理中包含所有处理状态
+                    filteredTasks = allTasks.filter(task =>
+                        ['processing', 'uploaded', 'extracting_frames', 'extracting_audio', 'generating_subtitles', 'ai_analysis'].includes(task.status)
+                    );
+                } else if (currentFilter === 'favorites') {
+                    // 只看收藏
+                    filteredTasks = allTasks.filter(task => task.is_favorite);
+                } else {
+                    // 其他筛选条件正常处理
+                    filteredTasks = allTasks.filter(task => task.status === currentFilter);
+                }
+            }
+
+            if (filteredTasks.length === 0) {
+                tasksGrid.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            tasksGrid.innerHTML = filteredTasks.map(task => `
+                <div class="task-card" data-status="${task.status}">
+                    <button class="delete-btn" onclick="deleteTask('${task.task_id}')">×</button>
+                    <div class="task-header">
+                        <div>
+                            <div style="display: flex; align-items: center;">
+                                <h3 class="task-title" style="margin-right: 8px;">${task.video_name}</h3>
+                                <button class="btn btn-sm btn-link" onclick="renameTask('${task.task_id}', '${task.video_name}')" title="重命名" style="padding: 0; font-size: 1.2rem; text-decoration: none;">✏️</button>
+                            </div>
+                            <div class="task-meta">
+                                <div class="task-meta-item">
+                                    <span>📅</span>
+                                    <span>${formatDate(task.created_at)}</span>
+                                </div>
+                                <div class="task-meta-item">
+                                    <span>⏱️</span>
+                                    <span>${formatDuration(task.duration)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="status-badge status-${task.status}">
+                            ${getStatusText(task.status)}
+                        </span>
+                    </div>
+                    
+                    ${task.status === 'done' ? `
+                    <div class="task-stats">
+                        <div class="task-stat">
+                            <div class="stat-value">${task.frames_count || 0}</div>
+                            <div class="stat-label">关键帧</div>
+                        </div>
+                        <div class="task-stat">
+                            <div class="stat-value">${task.subtitles_count || 0}</div>
+                            <div class="stat-label">字幕条数</div>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                    <button class="btn btn-primary" onclick="window.open('/result/${task.task_id}', '_blank')">查看分析结果</button>
+                    <!-- 编辑总结 -->
+                    <button class="btn btn-outline-primary" style="background-color:#ffeeba; border-color:#ffdf7e; color:#856404;" onclick="openSummaryModal('${task.task_id}')">📝 编辑总结</button>
+                    
+                    <button class="btn btn-success" onclick="downloadFrames('${task.task_id}', '${task.video_name}')">📥 关键帧</button>
+                    <button class="btn btn-info" onclick="showSubtitleMenu(event, '${task.task_id}', '${task.video_name}')">📄 字幕</button>
+                    <button class="btn btn-warning" onclick="generateReport('${task.task_id}', '${task.video_name}')">📋 报告</button>
+                    
+                    <!-- 分享按钮 -->
+                    <button class="btn btn-secondary ${task.is_public ? 'btn-active-share' : ''}" 
+                            onclick="toggleShare('${task.task_id}', this)"
+                            data-public="${task.is_public}">
+                        ${task.is_public ? '🌐 已公开' : '🔗 分享'}
+                    </button>
+                    
+                    <!-- 收藏按钮 -->
+                    <button class="btn btn-secondary ${task.is_favorite ? 'btn-active-favorite' : ''}" 
+                            onclick="toggleFavorite('${task.task_id}', this)"
+                            data-favorite="${task.is_favorite}">
+                        ${task.is_favorite ? '⭐ 已收藏' : '★ 收藏'}
+                    </button>
+                </div>
+            ` : task.status === 'failed' ? `
+                    <div style="color: #dc2626; margin-top: 10px;">
+                        错误：${task.error_message || '未知错误'}
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn btn-secondary" onclick="retryTask('${task.task_id}')">重新处理</button>
+                    </div>
+                    ` : `
+                    <div style="margin-top: 15px;">
+                        <div class="loading"></div>
+                        <span style="margin-left: 10px; color: #718096;">处理中...</span>
+                    </div>
+                    `}
+                </div>
+            `).join('');
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusMap = {
+                'done': '已完成',
+                'processing': '处理中',
+                'failed': '失败',
+                'uploaded': '已上传',
+                'extracting_frames': '提取帧中',
+                'extracting_audio': '提取音频中',
+                'generating_subtitles': '生成字幕中',
+                'ai_analysis': 'AI分析中'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 筛选任务
+        function filterTasks(filter) {
+            currentFilter = filter;
+
+            // 更新tab状态
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.filter === filter) {
+                    tab.classList.add('active');
+                }
+            });
+
+            renderTasks();
+        }
+
+        // 删除任务
+        async function deleteTask(taskId) {
+            if (!confirm('确定要删除这个任务吗？此操作无法撤销。')) {
+                return;
+            }
+
+            try {
+                const response = await apiRequest(`/api/tasks/${taskId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showToast('任务已删除', 'success');
+                    // 从列表中移除
+                    allTasks = allTasks.filter(task => task.task_id !== taskId);
+                    renderTasks();
+                } else {
+                    throw new Error('删除失败');
+                }
+            } catch (error) {
+                console.error('删除任务失败:', error);
+                showToast('删除任务失败', 'error');
+            }
+        }
+
+        // 下载关键帧
+        async function downloadFrames(taskId, videoName) {
+            try {
+                showToast('正在打包关键帧...', 'info');
+
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/tasks/${taskId}/download-frames`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${videoName}_frames.zip`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    showToast('关键帧下载成功！', 'success');
+                } else {
+                    let errorMessage = '下载失败';
+                    const clone = response.clone();
+                    try {
+                        const error = await response.json();
+                        errorMessage = error.detail || errorMessage;
+                    } catch (e) {
+                        errorMessage = await clone.text() || response.statusText;
+                    }
+                    showToast(errorMessage, 'error');
+                }
+            } catch (error) {
+                console.error('下载关键帧失败:', error);
+                showToast('下载失败，请稍后重试', 'error');
+            }
+        }
+
+        // 显示字幕导出菜单
+        function showSubtitleMenu(event, taskId, videoName) {
+            event.stopPropagation();
+
+            const formats = [
+                { name: 'SRT格式', value: 'srt' },
+                { name: 'VTT格式', value: 'vtt' },
+                { name: 'TXT格式', value: 'txt' }
+            ];
+
+            const menu = document.createElement('div');
+            menu.style.cssText = `
+                position: absolute;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                padding: 8px 0;
+                z-index: 1000;
+            `;
+
+            formats.forEach(fmt => {
+                const item = document.createElement('div');
+                item.textContent = fmt.name;
+                item.style.cssText = `
+                    padding: 10px 20px;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                `;
+                item.onmouseover = () => item.style.background = '#f0f0f0';
+                item.onmouseout = () => item.style.background = 'white';
+                item.onclick = () => {
+                    exportSubtitles(taskId, fmt.value, videoName);
+                    document.body.removeChild(menu);
+                };
+                menu.appendChild(item);
+            });
+
+            const rect = event.target.getBoundingClientRect();
+            menu.style.top = (rect.bottom + window.scrollY) + 'px';
+            menu.style.left = rect.left + 'px';
+
+            document.body.appendChild(menu);
+
+            const closeMenu = (e) => {
+                if (!menu.contains(e.target)) {
+                    document.body.removeChild(menu);
+                    document.removeEventListener('click', closeMenu);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', closeMenu), 100);
+        }
+
+        // 导出字幕
+        async function exportSubtitles(taskId, format, videoName) {
+            try {
+                showToast(`正在导出${format.toUpperCase()}字幕...`, 'info');
+
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/tasks/${taskId}/export-subtitles?format=${format}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${videoName}_subtitles.${format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    showToast(`${format.toUpperCase()}字幕导出成功！`, 'success');
+                } else {
+                    let errorMessage = '导出失败';
+                    const clone = response.clone();
+                    try {
+                        const error = await response.json();
+                        errorMessage = error.detail || errorMessage;
+                    } catch (e) {
+                        errorMessage = await clone.text() || response.statusText;
+                    }
+                    showToast(errorMessage, 'error');
+                }
+            } catch (error) {
+                console.error('导出字幕失败:', error);
+                showToast('导出失败，请稍后重试', 'error');
+            }
+        }
+
+        // 重试任务
+        async function retryTask(taskId) {
+            try {
+                const response = await apiRequest(`/api/process/${taskId}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    showToast('已重新开始处理', 'success');
+                    setTimeout(() => loadTasks(), 1000);
+                } else {
+                    throw new Error('重试失败');
+                }
+            } catch (error) {
+                console.error('重试失败:', error);
+                showToast('重试失败', 'error');
+            }
+        }
+
+        // 生成报告
+        // 生成报告
+        async function generateReport(taskId, videoName) {
+            const format = 'md';
+            try {
+                // 打开新窗口下载报告，添加时间戳防止缓存
+                const timestamp = new Date().getTime();
+                window.open(`/api/download/${taskId}?format=${format}&t=${timestamp}`, '_blank');
+                showToast('正在下载报告...', 'info');
+            } catch (error) {
+                console.error('生成报告失败:', error);
+                showToast('生成失败，请稍后重试', 'error');
+            }
+        }
+
+        // 切换收藏
+        async function toggleFavorite(taskId, btn) {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/tasks/${taskId}/toggle_favorite`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Update UI state
+                    const isFav = data.is_favorite;
+                    btn.setAttribute('data-favorite', isFav);
+
+                    if (isFav) {
+                        btn.classList.add('btn-active-favorite');
+                        btn.innerHTML = '⭐ 已收藏';
+                        showToast('已收藏', 'success');
+                    } else {
+                        btn.classList.remove('btn-active-favorite');
+                        btn.innerHTML = '★ 收藏';
+                        showToast('已取消收藏', 'info');
+                    }
+                } else {
+                    showToast('操作失败', 'error');
+                }
+            } catch (error) {
+                console.error('Toggle favorite error:', error);
+                showToast('操作出错', 'error');
+            }
+        }
+
+        // 切换分享
+        async function toggleShare(taskId, btn) {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/tasks/${taskId}/toggle_share`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Update UI state
+                    const isPublic = data.is_public;
+                    btn.setAttribute('data-public', isPublic);
+
+                    if (isPublic) {
+                        btn.classList.add('btn-active-share');
+                        btn.innerHTML = '🌐 已公开';
+                        showToast('任务已公开，可复制链接分享', 'success');
+
+                        // Copy link to clipboard
+                        const link = `${window.location.origin}/result/${taskId}`;
+                        navigator.clipboard.writeText(link).then(() => {
+                            showToast('链接已复制到剪贴板', 'success');
+                        });
+
+                    } else {
+                        btn.classList.remove('btn-active-share');
+                        btn.innerHTML = '🔗 分享';
+                        showToast('已设为私有', 'info');
+                    }
+                } else {
+                    showToast('操作失败', 'error');
+                }
+            } catch (error) {
+                console.error('Toggle share error:', error);
+                showToast('操作出错', 'error');
+            }
+        }
+
+        // 重命名任务
+        async function renameTask(taskId, currentName) {
+            const newName = prompt("请输入新的任务名称:", currentName);
+            if (newName && newName.trim() !== "" && newName !== currentName) {
+                try {
+                    const token = localStorage.getItem('access_token');
+                    const response = await fetch(`/api/tasks/${taskId}/rename`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name: newName.trim() })
+                    });
+
+                    if (response.ok) {
+                        showToast('重命名成功', 'success');
+                        loadTasks(); // 刷新列表
+                    } else {
+                        const err = await response.json();
+                        showToast(err.detail || '重命名失败', 'error');
+                    }
+                } catch (error) {
+                    console.error('Rename error:', error);
+                    showToast('操作出错', 'error');
+                }
+            }
+        }
+
+        // ===================== 总结编辑模态框逻辑 =====================
+
+        // 每5秒自动刷新
+        setInterval(loadTasks, 5000);
+
+        // ===================== 总结编辑模态框逻辑 =====================
+        let currentEditingTaskId = null;
+        let currentAISummary = ""; // 存储当前的AI总结
+
+        async function openSummaryModal(taskId) {
+            currentEditingTaskId = taskId;
+            currentAISummary = ""; // 重置
+
+            const modal = document.getElementById('summaryModal');
+            const classSummaryInput = document.getElementById('classSummary');
+            const userReflectionInput = document.getElementById('userReflection');
+
+            // 清空并显示加载状态
+            classSummaryInput.value = "加载中...";
+            userReflectionInput.value = "加载中...";
+            modal.style.display = 'block';
+
+            // 默认隐藏反思区，显示添加按钮
+            document.getElementById('reflectionSection').style.display = 'none';
+            document.getElementById('toggleReflectionBtn').style.display = 'inline-block';
+
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    showToast('请先登录', 'error');
+                    closeSummaryModal();
+                    return;
+                }
+
+                const response = await fetch(`/api/tasks/${taskId}/summary`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // 保存AI原始总结供恢复使用
+                    currentAISummary = data.ai_summary || "";
+
+                    // 逻辑：
+                    // 1. 如果有 class_summary (用户编辑过)，显示它
+                    // 2. 如果没有 class_summary，显示 ai_summary
+                    classSummaryInput.value = data.class_summary || data.ai_summary || "";
+                    userReflectionInput.value = data.user_reflection || "";
+
+                    // 如果有反思内容，自动展开
+                    if (data.user_reflection && data.user_reflection.trim()) {
+                        document.getElementById('reflectionSection').style.display = 'block';
+                        document.getElementById('toggleReflectionBtn').style.display = 'none';
+                    }
+                } else {
+                    showToast('获取总结数据失败', 'error');
+                    closeSummaryModal();
+                }
+            } catch (error) {
+                console.error('获取总结失败:', error);
+                showToast('获取数据出错', 'error');
+                closeSummaryModal();
+            }
+        }
+
+        function copyAIContent() {
+            if (!currentAISummary) {
+                showToast('暂无AI生成的内容', 'warning');
+                return;
+            }
+            if (confirm('确定要覆盖当前内容，恢复为AI原始生成的总结吗？')) {
+                document.getElementById('classSummary').value = currentAISummary;
+                showToast('已恢复AI内容', 'success');
+            }
+        }
+
+        function toggleReflection() {
+            const section = document.getElementById('reflectionSection');
+            const btn = document.getElementById('toggleReflectionBtn');
+            section.style.display = 'block';
+            btn.style.display = 'none';
+            document.getElementById('userReflection').focus();
+        }
+
+        function hideReflection() {
+            if (confirm('确定要移除教学反思部分吗？内容将被清空。')) {
+                const section = document.getElementById('reflectionSection');
+                const btn = document.getElementById('toggleReflectionBtn');
+                const input = document.getElementById('userReflection');
+
+                section.style.display = 'none';
+                btn.style.display = 'inline-block';
+                input.value = ""; // 清空内容
+            }
+        }
+
+
+        function copySummaryToReflection() {
+            const summary = document.getElementById('classSummary').value;
+            const reflection = document.getElementById('userReflection').value;
+
+            if (!summary) {
+                showToast('上方没有内容可复制', 'warning');
+                return;
+            }
+
+            // 如果反思区未显示，先显示
+            const section = document.getElementById('reflectionSection');
+            if (section.style.display === 'none') {
+                toggleReflection();
+            }
+
+            if (reflection && !confirm('反思区已有内容，确定要追加在后面吗？(取消则覆盖)')) {
+                document.getElementById('userReflection').value = summary;
+            } else {
+                document.getElementById('userReflection').value = reflection ? reflection + "\n\n" + summary : summary;
+            }
+            showToast('已复制到下方', 'success');
+        }
+
+        function closeSummaryModal() {
+            document.getElementById('summaryModal').style.display = 'none';
+            currentEditingTaskId = null;
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function (event) {
+            const modal = document.getElementById('summaryModal');
+            if (event.target == modal) {
+                closeSummaryModal();
+            }
+        }
+
+        async function saveSummary() {
+            if (!currentEditingTaskId) return;
+
+            const classSummary = document.getElementById('classSummary').value;
+            const userReflection = document.getElementById('userReflection').value;
+            const token = localStorage.getItem('access_token');
+
+            try {
+                const response = await fetch(`/api/tasks/${currentEditingTaskId}/summary`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        class_summary: classSummary,
+                        user_reflection: userReflection
+                    })
+                });
+
+                if (response.ok) {
+                    showToast('总结已保存！', 'success');
+                    closeSummaryModal();
+                } else {
+                    showToast('保存失败', 'error');
+                }
+            } catch (error) {
+                console.error('保存总结失败:', error);
+                showToast('保存出错', 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

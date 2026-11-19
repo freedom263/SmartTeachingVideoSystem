@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用帮助 - 教学视频智能分析系统</title>
+    <link rel="stylesheet" href="/static/common.css">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        .help-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .help-section {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .help-section h2 {
+            color: var(--gradient-start);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .help-section h3 {
+            color: var(--text-primary);
+            margin: 25px 0 15px 0;
+            font-size: 1.3rem;
+        }
+
+        .help-section p {
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .help-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-section li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .help-section li:last-child {
+            border-bottom: none;
+        }
+
+        kbd {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-family: monospace;
+            color: var(--gradient-start);
+            font-size: 0.9rem;
+        }
+
+        .step {
+            background: var(--bg-primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-logo">
+                <span>🎓</span>
+                <span>教学视频智能分析系统</span>
+            </a>
+            <ul class="navbar-menu">
+                <li><a href="/index.html">首页</a></li>
+                <li><a href="/upload.html">视频上传</a></li>
+                <li><a href="/tasks.html">我的任务</a></li>
+                <li><a href="/profile.html">个人中心</a></li>
+            </ul>
+            <div class="navbar-user">
+                <div class="user-info">
+                    <div class="user-avatar" id="navUserAvatar">T</div>
+                    <span id="navUsername">教师</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="help-container">
+        <h1 style="text-align: center; margin-bottom: 40px; color: var(--text-primary);">📖 使用帮助</h1>
+
+        <!-- 快速开始 -->
+        <div class="help-section">
+            <h2>🚀 快速开始</h2>
+            <h3>1. 上传视频</h3>
+            <div class="step">
+                <span class="step-number">1</span>
+                点击导航栏的"视频上传"或按 <kbd>Ctrl+U</kbd>
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                拖拽或点击选择视频文件（支持MP4、AVI、MOV等格式）
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                选择分析选项（关键帧提取、字幕生成、知识图谱）
+            </div>
+            <div class="step">
+                <span class="step-number">4</span>
+                点击"开始分析"，系统自动处理视频
+            </div>
+
+            <h3>2. 查看分析结果</h3>
+            <p>处理完成后，可在"我的任务"中查看结果，包括：</p>
+            <ul>
+                <li>📸 关键帧展示</li>
+                <li>📝 自动生成的字幕</li>
+                <li>🔗 知识图谱可视化</li>
+                <li>📊 AI分析总结</li>
+            </ul>
+        </div>
+
+        <!-- 功能说明 -->
+        <div class="help-section">
+            <h2>⚡ 功能说明</h2>
+
+            <h3>下载与导出</h3>
+            <ul>
+                <li><strong>📥 下载关键帧：</strong>一键打包下载所有关键帧为ZIP文件</li>
+                <li><strong>📄 导出字幕：</strong>支持SRT、VTT、TXT三种格式</li>
+                <li><strong>📋 生成报告：</strong>生成包含完整分析结果的Markdown报告</li>
+            </ul>
+
+            <h3>分享与收藏</h3>
+            <ul>
+                <li><strong>🔗 分享：</strong>生成分享链接，可设置密码和有效期</li>
+                <li><strong>⭐ 收藏：</strong>收藏重要任务，方便后续查找</li>
+            </ul>
+        </div>
+
+        <!-- 键盘快捷键 -->
+        <div class="help-section">
+            <h2>⌨️ 键盘快捷键</h2>
+            <ul>
+                <li><kbd>Ctrl+H</kbd> - 返回首页</li>
+                <li><kbd>Ctrl+U</kbd> - 视频上传</li>
+                <li><kbd>Ctrl+T</kbd> - 我的任务</li>
+                <li><kbd>Ctrl+P</kbd> - 个人中心</li>
+                <li><kbd>Ctrl+Shift+D</kbd> - 切换暗色模式</li>
+                <li><kbd>Esc</kbd> - 关闭弹窗</li>
+                <li><kbd>?</kbd> - 显示/隐藏快捷键提示</li>
+            </ul>
+        </div>
+
+        <!-- 常见问题 -->
+        <div class="help-section">
+            <h2>❓ 常见问题</h2>
+
+            <h3>Q: 支持哪些视频格式？</h3>
+            <p>A: 系统支持常见的视频格式，包括MP4、AVI、MOV、WMV、FLV等。建议使用MP4格式以获得最佳兼容性。</p>
+
+            <h3>Q: 视频处理需要多长时间？</h3>
+            <p>A: 处理时间取决于视频长度和复杂度。通常10分钟的视频需要2-5分钟处理时间。</p>
+
+            <h3>Q: 如何切换暗色模式？</h3>
+            <p>A: 点击页面右下角的月亮/太阳图标，或按 <kbd>Ctrl+Shift+D</kbd> 快捷键。</p>
+
+            <h3>Q: 分享链接如何使用？</h3>
+            <p>A: 点击任务的"🔗 分享"按钮，系统会生成一个分享链接。您可以设置密码保护和有效期，然后将链接发送给他人。</p>
+
+            <h3>Q: 如何删除任务？</h3>
+            <p>A: 在任务列表中，将鼠标悬停在任务卡片上，点击右上角的"×"按钮即可删除。</p>
+        </div>
+
+        <!-- 技巧与建议 -->
+        <div class="help-section">
+            <h2>💡 使用技巧</h2>
+            <ul>
+                <li>📹 <strong>视频时长：</strong>建议上传10-60分钟的教学视频，效果最佳</li>
+                <li>🎯 <strong>视频质量：</strong>清晰度越高，关键帧提取效果越好</li>
+                <li>🔊 <strong>音频质量：</strong>清晰的语音有助于准确生成字幕</li>
+                <li>🏷️ <strong>使用标签：</strong>为任务添加标签，方便分类管理</li>
+                <li>⭐ <strong>收藏重要任务：</strong>使用收藏功能，快速找到常用视频</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 主题切换按钮 -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="切换暗色模式">
+        <span id="themeIcon">🌙</span>
+    </button>
+
+    <!-- 键盘快捷键提示 -->
+    <div class="keyboard-hint" id="keyboardHint">
+        <h4>⌨️ 快捷键</h4>
+        <ul>
+            <li><kbd>Ctrl+H</kbd> 首页</li>
+            <li><kbd>Ctrl+U</kbd> 上传</li>
+            <li><kbd>Ctrl+T</kbd> 任务</li>
+            <li><kbd>Esc</kbd> 关闭</li>
+        </ul>
+    </div>
+
+    <script src="/static/common.js"></script>
+    <script src="/static/keyboard.js"></script>
+    <script>
+        checkAuth();
+        window.addEventListener('load', initNavbar);
+
+        // 主题切换功能
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            // 更新图标
+            document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // 加载保存的主题
+        window.addEventListener('load', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+
+</html>

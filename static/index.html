@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 教学视频智能分析系统</title>
+    <link rel="stylesheet" href="/static/common.css">
+    <link rel="stylesheet" href="/static/theme.css">
+    <style>
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 40px;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-btn {
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-btn.secondary {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-desc {
+            color: #718096;
+            line-height: 1.8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-logo">
+                <span>🎓</span>
+                <span>教学视频智能分析系统</span>
+            </a>
+            <ul class="navbar-menu">
+                <li><a href="/index.html">首页</a></li>
+                <li><a href="/upload.html">视频上传</a></li>
+                <li><a href="/tasks.html">我的任务</a></li>
+                <li><a href="/profile.html">个人中心</a></li>
+            </ul>
+            <div class="navbar-user">
+                <div class="user-info">
+                    <div class="user-avatar" id="navUserAvatar">A</div>
+                    <span id="navUsername">用户</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <div class="container">
+        <!-- Hero区域 -->
+        <div class="hero">
+            <h1>欢迎使用教学视频智能分析系统</h1>
+            <p>基于AI技术的教学视频自动拆解与分析平台，帮助教师和学生更好地理解和改进教学内容</p>
+            <div class="hero-buttons">
+                <a href="/upload.html" class="hero-btn">开始分析视频</a>
+                <a href="/tasks.html" class="hero-btn secondary">查看我的任务</a>
+            </div>
+        </div>
+
+        <!-- 功能特点 -->
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🎬</div>
+                <h3 class="feature-title">智能关键帧提取</h3>
+                <p class="feature-desc">AI自动识别视频中的关键教学时刻，精准提取PPT、板书等重要画面</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3 class="feature-title">语音智能转写</h3>
+                <p class="feature-desc">高精度语音识别技术，自动生成完整的课堂实录字幕</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">知识图谱构建</h3>
+                <p class="feature-desc">AI分析课堂内容，自动提取知识点并建立关联关系</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">教学分析报告</h3>
+                <p class="feature-desc">生成专业的教学分析报告，支持导出PDF/Word格式</p>
+            </div>
+        </div>
+
+        <!-- 统计数据 -->
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalVideos">-</div>
+                <div class="stat-label">已分析视频</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalFrames">-</div>
+                <div class="stat-label">提取关键帧</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalSubtitles">-</div>
+                <div class="stat-label">生成字幕</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/common.js?v=1.1"></script>
+    <script>
+        checkAuth();
+
+        (function () {
+            const token = getToken();
+            const user = getCurrentUser();
+
+            console.log('=== Index.html 登录检查 ===');
+            console.log('Token exists:', !!token);
+            console.log('User exists:', !!user);
+
+            // 如果没有token或用户信息，跳转到登录页
+            if (!token || !user) {
+                console.log('缺少token或用户信息，跳转登录页');
+                window.location.href = '/login.html';
+                return;
+            }
+
+            console.log('登录验证通过，用户:', user.username);
+        })();
+
+        // 初始化导航栏
+        window.addEventListener('load', async () => {
+            initNavbar();
+
+            // 临时：尝试重载任务数据以确保同步
+            try {
+                const token = localStorage.getItem('access_token');
+                if (token) {
+                    await fetch('/api/admin/reload_tasks', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    console.log('Task reload triggered');
+                }
+            } catch (e) { console.error(e); }
+
+            loadStats();
+        });
+
+        // 加载统计数据
+        async function loadStats() {
+            try {
+                const token = localStorage.getItem('access_token'); // 获取token
+                // 获取用户的任务列表
+                const response = await fetch('/api/tasks/recent', {
+                    headers: {
+                        'Authorization': `Bearer ${token}` // 添加Authorization头
+                    }
+                });
+                if (response.ok) {
+                    const tasks = await response.json();
+
+                    console.log('=== 首页统计数据 ===');
+                    console.log('任务列表:', tasks);
+
+                    // 计算统计数据
+                    const totalVideos = tasks.length;
+                    const totalFrames = tasks.reduce((sum, task) => {
+                        const count = task.frames_count || 0;
+                        console.log(`任务 ${task.id}: frames_count=${count}`);
+                        return sum + count;
+                    }, 0);
+                    const totalSubtitles = tasks.reduce((sum, task) => {
+                        const count = task.subtitles_count || 0;
+                        console.log(`任务 ${task.id}: subtitles_count=${count}`);
+                        return sum + count;
+                    }, 0);
+
+                    console.log('统计结果:', { totalVideos, totalFrames, totalSubtitles });
+
+                    // 更新显示
+                    document.getElementById('totalVideos').textContent = totalVideos;
+                    document.getElementById('totalFrames').textContent = totalFrames.toLocaleString();
+                    document.getElementById('totalSubtitles').textContent = totalSubtitles.toLocaleString();
+                } else {
+                    console.error('获取任务列表失败:', response.status);
+                }
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+                // 显示默认值
+                document.getElementById('totalVideos').textContent = '0';
+                document.getElementById('totalFrames').textContent = '0';
+                document.getElementById('totalSubtitles').textContent = '0';
+            }
+        }
+    </script>
+</body>
+
+</html>

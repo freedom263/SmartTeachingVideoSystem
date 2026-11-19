@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 教学视频智能分析系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 教育主题动态背景 */
+        .education-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* 视频帧元素 */
+        .video-frame {
+            position: absolute;
+            width: 150px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            animation: floatFrame 25s infinite ease-in-out;
+        }
+
+        .frame1 {
+            top: 15%;
+            left: 8%;
+            animation-delay: 0s;
+        }
+
+        .frame2 {
+            top: 65%;
+            right: 10%;
+            animation-delay: 8s;
+        }
+
+        .frame3 {
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 16s;
+        }
+
+        @keyframes floatFrame {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0.6;
+            }
+
+            25% {
+                transform: translate(20px, -20px) rotate(5deg);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: translate(40px, 10px) rotate(-3deg);
+                opacity: 0.7;
+            }
+
+            75% {
+                transform: translate(-10px, 30px) rotate(3deg);
+                opacity: 0.9;
+            }
+        }
+
+        /* 教学图标 */
+        .teaching-icon {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.12;
+            animation: pulse 4s infinite ease-in-out;
+        }
+
+        .icon1 {
+            top: 25%;
+            left: 18%;
+            animation-delay: 0s;
+        }
+
+        .icon2 {
+            top: 50%;
+            right: 20%;
+            animation-delay: 1.5s;
+        }
+
+        .icon3 {
+            bottom: 30%;
+            left: 25%;
+            animation-delay: 3s;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.12;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.2;
+            }
+        }
+
+        /* 数据流粒子 */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: particleFlow 15s infinite linear;
+        }
+
+        .particle:nth-child(1) {
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            left: 40%;
+            animation-delay: 3s;
+        }
+
+        .particle:nth-child(3) {
+            left: 60%;
+            animation-delay: 6s;
+        }
+
+        .particle:nth-child(4) {
+            left: 80%;
+            animation-delay: 9s;
+        }
+
+        @keyframes particleFlow {
+            0% {
+                top: -10%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.6;
+            }
+
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+
+        /* 教师轮廓SVG */
+        .teacher-silhouette {
+            position: absolute;
+            top: 20%;
+            right: 12%;
+            width: 120px;
+            height: 120px;
+            opacity: 0.1;
+            animation: silhouetteMove 20s infinite ease-in-out;
+        }
+
+        @keyframes silhouetteMove {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        /* PPT/黑板元素 */
+        .board-element {
+            position: absolute;
+            width: 180px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            bottom: 25%;
+            right: 18%;
+            animation: boardFloat 18s infinite ease-in-out;
+        }
+
+        @keyframes boardFloat {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            33% {
+                transform: translate(-15px, -15px);
+            }
+
+            66% {
+                transform: translate(10px, 10px);
+            }
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+            padding: 50px 60px;
+            max-width: 450px;
+            width: 100%;
+            animation: slideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-40px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+            animation: iconBounce 2s infinite ease-in-out;
+        }
+
+        @keyframes iconBounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .logo h1 {
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .logo p {
+            color: #718096;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group input::placeholder {
+            color: #a0aec0;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .error-message,
+        .success-message {
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c53030;
+            border-left: 4px solid #c53030;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            color: #166534;
+            border-left: 4px solid #166534;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 教育主题动态背景 -->
+    <div class="education-background">
+        <div class="video-frame frame1"></div>
+        <div class="video-frame frame2"></div>
+        <div class="video-frame frame3"></div>
+
+        <div class="teaching-icon icon1">📚</div>
+        <div class="teaching-icon icon2">🎥</div>
+        <div class="teaching-icon icon3">💡</div>
+
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+
+        <svg class="teacher-silhouette" viewBox="0 0 100 100" fill="white">
+            <circle cx="50" cy="25" r="15" />
+            <path d="M50 40 L50 70 M35 50 L65 50 M50 70 L35 95 M50 70 L65 95" stroke="white" stroke-width="3"
+                fill="none" />
+        </svg>
+
+        <div class="board-element"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="logo">
+            <span class="logo-icon">🎓</span>
+            <h1>教学视频智能分析系统</h1>
+            <p>智能视频分析 · 教学能力提升</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">👤 用户名</label>
+                <input type="text" id="username" name="username" placeholder="请输入用户名" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">🔒 密码</label>
+                <input type="password" id="password" name="password" placeholder="请输入密码" required>
+            </div>
+
+            <div class="form-group">
+                <label for="role">👔 登录身份</label>
+                <select id="role" name="role" required>
+                    <option value="teacher">教师</option>
+                    <option value="admin">管理员</option>
+                </select>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">登 录</button>
+        </form>
+
+        <div class="links">
+            还没有账号？<a href="/register.html">立即注册 →</a>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = '登录中...';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.user.role !== role) {
+                        errorMessage.textContent = `身份不匹配！该账号是${data.user.role === 'admin' ? '管理员' : '教师'}账号`;
+                        errorMessage.style.display = 'block';
+                        loginBtn.disabled = false;
+                        loginBtn.textContent = '登 录';
+                        return;
+                    }
+
+                    // 先清除所有旧的登录信息
+                    localStorage.clear();
+
+                    // 再保存新的token和用户信息
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    successMessage.textContent = '✓ 登录成功！正在跳转...';
+                    successMessage.style.display = 'block';
+
+                    // 根据角色跳转
+                    setTimeout(() => {
+                        if (data.user.role === 'admin') {
+                            window.location.href = '/admin.html';
+                        } else {
+                            window.location.href = '/index.html';
+                        }
+                    }, 1000);
+                } else {
+                    errorMessage.textContent = data.detail || '登录失败，请检查用户名和密码';
+                    errorMessage.style.display = 'block';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '登 录';
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                errorMessage.textContent = '网络错误，请检查连接后重试';
+                errorMessage.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = '登 录';
+            }
+        });
+
+        // 清除之前的登录状态（避免闪烁）
+        // 注释掉自动跳转逻辑，让用户每次都需要手动登录
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+# 原有依赖
+fastapi
+uvicorn
+python-multipart
+opencv-python
+numpy
+requests
+aiohttp
+
+# 新增数据库和认证依赖
+sqlalchemy
+python-jose[cryptography]
+passlib[bcrypt]

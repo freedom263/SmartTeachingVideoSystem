@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 450">
+  <rect width="1200" height="450" fill="#ffffff"/>
+  
+  <line x1="100" y1="225" x2="1100" y2="225" stroke="#333333" stroke-width="2" stroke-dasharray="8,4"/>
+
+  <style>
+    .node-title { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 15px; font-weight: bold; fill: #000000; }
+    .sub-task { font-family: 'PingFang SC', sans-serif; font-size: 12px; font-weight: 500; fill: #1A1A1A; }
+    .stage-label { font-family: 'PingFang SC', sans-serif; font-size: 13px; font-weight: bold; fill: #FFFFFF; }
+  </style>
+
+  <g transform="translate(60, 195)">
+    <circle cx="30" cy="30" r="30" fill="#000000"/>
+    <text x="30" y="36" text-anchor="middle" class="stage-label">输入</text>
+    <text x="30" y="78" text-anchor="middle" class="sub-task" style="font-weight:bold">教学视频</text>
+  </g>
+
+  <g transform="translate(180, 50)">
+    <path d="M0,175 L180,175" stroke="#333333" stroke-width="3"/>
+    <circle cx="90" cy="175" r="5" fill="#333333"/>
+    <text x="0" y="20" class="node-title">视频拆解</text>
+    <g transform="translate(0, 40)">
+      <rect width="170" height="30" rx="2" fill="#F0F0F0" stroke="#CCCCCC"/>
+      <text x="10" y="20" class="sub-task">关键帧抽取 (dHash)</text>
+    </g>
+    <g transform="translate(0, 75)">
+      <rect width="170" height="30" rx="2" fill="#F0F0F0" stroke="#CCCCCC"/>
+      <text x="10" y="20" class="sub-task">音频分片预处理</text>
+    </g>
+    <g transform="translate(0, 110)">
+      <rect width="170" height="30" rx="2" fill="#F0F0F0" stroke="#CCCCCC"/>
+      <text x="10" y="20" class="sub-task">ASR 语音转写</text>
+    </g>
+  </g>
+
+  <g transform="translate(410, 50)">
+    <path d="M0,175 L180,175" stroke="#0056b3" stroke-width="3"/>
+    <circle cx="90" cy="175" r="5" fill="#0056b3"/>
+    <text x="0" y="20" class="node-title" style="fill:#0056b3">内容分析</text>
+    <g transform="translate(0, 40)">
+      <rect width="170" height="30" rx="2" fill="#E8F1F8" stroke="#0056b3" stroke-opacity="0.2"/>
+      <text x="10" y="20" class="sub-task">DeepSeek 语义总结</text>
+    </g>
+    <g transform="translate(0, 75)">
+      <rect width="170" height="30" rx="2" fill="#E8F1F8" stroke="#0056b3" stroke-opacity="0.2"/>
+      <text x="10" y="20" class="sub-task">语音情感与节奏分析</text>
+    </g>
+    <g transform="translate(0, 110)">
+      <rect width="170" height="30" rx="2" fill="#E8F1F8" stroke="#0056b3" stroke-opacity="0.2"/>
+      <text x="10" y="20" class="sub-task">视听文多模态对齐</text>
+    </g>
+  </g>
+
+  <g transform="translate(640, 195)">
+    <rect width="80" height="60" rx="4" fill="#333333"/>
+    <circle cx="40" cy="30" r="6" fill="#FFFFFF"/>
+    <text x="40" y="78" text-anchor="middle" class="node-title" style="font-size:12px">特征库</text>
+  </g>
+
+  <g transform="translate(770, 50)">
+    <path d="M0,175 L180,175" stroke="#d35400" stroke-width="3"/>
+    <circle cx="90" cy="175" r="5" fill="#d35400"/>
+    <text x="0" y="20" class="node-title" style="fill:#d35400">跨模态检索</text>
+    <g transform="translate(0, 40)">
+      <rect width="170" height="30" rx="2" fill="#FBEEE6" stroke="#d35400" stroke-opacity="0.2"/>
+      <text x="10" y="20" class="sub-task">自然语言意图解析</text>
+    </g>
+    <g transform="translate(0, 75)">
+      <rect width="170" height="30" rx="2" fill="#FBEEE6" stroke="#d35400" stroke-opacity="0.2"/>
+      <text x="10" y="20" class="sub-task">CG-DETR 相关度匹配</text>
+    </g>
+  </g>
+
+  <g transform="translate(1000, 195)">
+    <circle cx="40" cy="30" r="35" fill="#000000"/>
+    <path d="M30,30 L50,30 M40,20 L40,40" stroke="#FFFFFF" stroke-width="2"/>
+    <text x="40" y="85" text-anchor="middle" class="node-title">智能产出</text>
+    
+    <g transform="translate(40, 105)">
+      <text x="0" y="0" text-anchor="middle" class="sub-task" style="font-weight:bold">结构化分析报告</text>
+      <text x="0" y="20" text-anchor="middle" class="sub-task" style="font-weight:bold">毫秒级定位片段</text>
+      <text x="0" y="40" text-anchor="middle" class="sub-task" style="font-weight:bold">针对性教学建议</text>
+    </g>
+  </g>
+
+  <text x="600" y="430" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#333333">SYSTEM ARCHITECTURE FOR INTELLIGENT VIDEO ANALYSIS © 2026</text>
+</svg>
