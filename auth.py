@@ -10,8 +10,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 import bcrypt  # 直接使用bcrypt
 from sqlalchemy.orm import Session
-from database import get_db
-from models import User
+from database.connection import get_db
+from database.models import User
 
 # JWT配置
 SECRET_KEY = "your-secret-key-change-this-in-production-2024"  # 生产环境需要更换
